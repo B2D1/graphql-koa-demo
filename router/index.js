@@ -1,28 +1,21 @@
-const { graphqlKoa, graphiqlKoa } = require("graphql-server-koa");
-const { saveInfo, fetchInfo } = require("../controller/info");
+const { saveInfo, fetchInfo } = require("../service/info");
 const {
   saveStudent,
   fetchStudent,
   fetchStudentDetail,
-} = require("../controller/student");
-const router = require("koa-router")();
+} = require("../service/student");
+const { saveCourse, fetchCourse } = require("../service/course");
+const Router = require("koa-router");
 
-const schema = require("../graphql/schema");
-router
+const requestRouter = new Router();
+
+requestRouter
   .post("/saveInfo", saveInfo)
   .get("/info", fetchInfo)
   .post("/saveStudent", saveStudent)
   .get("/student", fetchStudent)
-  .get("/studentDetail", fetchStudentDetail);
-  
-router
-  .post("/graphql", async (ctx, next) => {
-    await graphqlKoa({ schema: schema })(ctx, next); // 使用schema
-  })
-  .get("/graphql", async (ctx, next) => {
-    await graphqlKoa({ schema: schema })(ctx, next); // 使用schema
-  })
-  .get("/graphiql", async (ctx, next) => {
-    await graphiqlKoa({ endpointURL: "/graphql" })(ctx, next); // 重定向到graphiql路由
-  });
-module.exports = router;
+  .get("/studentDetail", fetchStudentDetail)
+  .post("/savesCourse", saveCourse)
+  .get("/course", fetchCourse);
+
+module.exports = requestRouter;

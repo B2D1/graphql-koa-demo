@@ -6,20 +6,7 @@ const {
   GraphQLNonNull,
 } = require("graphql");
 
-const mongoose = require("mongoose");
-const Info = mongoose.model("Info");
-
-const objType = new GraphQLObjectType({
-  name: "mete",
-  fields: {
-    createdAt: {
-      type: GraphQLString,
-    },
-    updatedAt: {
-      type: GraphQLString,
-    },
-  },
-});
+const Info = require("../db/model/info");
 
 const InfoType = new GraphQLObjectType({
   name: "Info",
@@ -36,8 +23,11 @@ const InfoType = new GraphQLObjectType({
     hobby: {
       type: new GraphQLList(GraphQLString),
     },
-    meta: {
-      type: objType,
+    createdAt: {
+      type: GraphQLString,
+    },
+    updatedAt: {
+      type: GraphQLString,
     },
   },
 });
@@ -49,21 +39,24 @@ const infos = {
     return Info.find({}).exec();
   },
 };
+
+const info = {
+  type: InfoType,
+  args: {
+    id: {
+      name: "id",
+      type: new GraphQLNonNull(GraphQLID),
+    },
+  },
+  resolve(root, params, options) {
+    return Info.findOne({
+      _id: params.id,
+    }).exec();
+  },
+};
+
 module.exports = {
   InfoType,
   infos,
-  info: {
-    type: InfoType,
-    args: {
-      id: {
-        name: "id",
-        type: new GraphQLNonNull(GraphQLID),
-      },
-    },
-    resolve(root, params, options) {
-      return Info.findOne({
-        _id: params.id,
-      }).exec();
-    },
-  },
+  info,
 };

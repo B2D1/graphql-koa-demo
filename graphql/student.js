@@ -6,10 +6,8 @@ const {
   GraphQLInt,
 } = require("graphql");
 
-const mongoose = require("mongoose");
-
+const Student = require("../db/model/student");
 const { InfoType } = require("./info");
-const Student = mongoose.model("Student");
 
 const StudentType = new GraphQLObjectType({
   name: "Student",
@@ -20,7 +18,7 @@ const StudentType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
-    sex: {
+    gender: {
       type: GraphQLString,
     },
     age: {
@@ -32,17 +30,19 @@ const StudentType = new GraphQLObjectType({
   },
 });
 
-module.exports = {
-  student: {
-    type: new GraphQLList(StudentType),
-    args: {},
-    resolve(root, params, options) {
-      return Student.find({})
-        .populate({
-          path: "info",
-          select: "hobby height weight",
-        })
-        .exec();
-    },
+const student = {
+  type: new GraphQLList(StudentType),
+  args: {},
+  resolve(root, params, options) {
+    return Student.find({})
+      .populate({
+        path: "info",
+        select: "hobby height weight",
+      })
+      .exec();
   },
+};
+
+module.exports = {
+  student,
 };
